@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FTP Client</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Подключение к FTP</h1>
+        <form method="POST">
+            <div class="form-group">
+                <label>Хост:</label>
+                <input type="text" name="host" value="{{ config.host }}" required>
+            </div>
+            <div class="form-group">
+                <label>Пользователь:</label>
+                <input type="text" name="username" value="{{ config.username }}" required>
+            </div>
+            <div class="form-group">
+                <label>Пароль:</label>
+                <input type="password" name="password" value="{{ config.password }}">
+            </div>
+            <button type="submit">Подключиться</button>
+        </form>
+    </div>
+</body>
+</html>

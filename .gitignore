@@ -1,0 +1,70 @@
+### Общие исключения для ОС и редакторов ###
+# Файлы macOS
+.DS_Store
+
+# Временные файлы редакторов
+*.swp
+*.swo
+*~
+
+# Файлы Windows
+Thumbs.db
+
+
+### Виртуальные окружения ###
+venv/
+env/
+.env/
+ENV/
+*.env
+
+
+### Файлы Python ###
+# Байт-код и кэш
+__pycache__/
+*.py[cod]
+*.pyd
+*.pyo
+*.so
+
+# Локальные настройки (например, Django)
+local_settings.py
+settings/local.py
+
+
+### Тестирование и покрытие ###
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+
+
+### Сборка и установка ###
+build/
+dist/
+*.egg-info/
+*.egg
+
+
+### Логи и базы данных ###
+*.log
+*.sqlite
+*.db
+
+
+### IDE и редакторы ###
+# PyCharm
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+
+
+### Конфигурации и зависимости ###
+# Файлы окружения (исключите .env.example, если он нужен)
+.env*
+!.env.example
+
+# Pipenv
+Pipfile.lock  # Обычно включают в репозиторий, но можно исключить

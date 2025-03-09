@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Файлы FTP</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Выберите файлы для скачивания</h1>
+        <form action="/download" method="POST">
+            <div class="file-list">
+                {% for file in files %}
+                <label class="file-item">
+                    <input type="checkbox" name="files" value="{{ file }}">
+                    {{ file }}
+                </label>
+                {% endfor %}
+            </div>
+            <button type="submit">Скачать выбранные</button>
+        </form>
+    </div>
+</body>
+</html>
