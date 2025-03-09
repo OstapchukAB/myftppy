@@ -1,22 +1,62 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Файлы FTP</title>
+    <title>FTP Files</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .file-table { width: 100%; border-collapse: collapse; }
+        .file-table th, .file-table td { padding: 8px; border: 1px solid #ddd; }
+        .file-table th { background-color: #f5f5f5; text-align: left; }
+        .dir-link { color: #1a73e8; text-decoration: none; }
+        .dir-link:hover { text-decoration: underline; }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>Выберите файлы для скачивания</h1>
+        <h1>FTP Browser: {{ current_dir }}</h1>
+        
+        {% if parent_dir %}
+        <p>
+            <a href="/files/{{ parent_dir }}" class="dir-link">↑ Parent Directory</a>
+        </p>
+        {% endif %}
+
         <form action="/download" method="POST">
-            <div class="file-list">
-                {% for file in files %}
-                <label class="file-item">
-                    <input type="checkbox" name="files" value="{{ file }}">
-                    {{ file }}
-                </label>
-                {% endfor %}
-            </div>
-            <button type="submit">Скачать выбранные</button>
+            <table class="file-table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Size</th>
+                        <th>Modified</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for file in files %}
+                    <tr>
+                        <td>
+                            {% if not file.is_dir %}
+                            <input type="checkbox" name="files" value="{{ file.name }}">
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if file.is_dir %}
+                            <a href="/files/{{ current_dir }}/{{ file.name }}" class="dir-link">
+                                📁 {{ file.name }}
+                            </a>
+                            {% else %}
+                            📄 {{ file.name }}
+                            {% endif %}
+                        </td>
+                        <td>{{ file.type }}</td>
+                        <td>{{ file.size_h }}</td>
+                        <td>{{ file.mtime }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="submit">Download Selected</button>
         </form>
     </div>
 </body>

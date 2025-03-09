@@ -4,7 +4,7 @@ body {
 }
 
 .container {
-    max-width: 600px;
+    max-width: 100%;
     margin: 0 auto;
 }
 
@@ -22,3 +22,18 @@ body {
     display: block;
     margin: 5px 0;
 }
+.file-table {
+    width: 100vm;
+    margin-left: -15px;
+    margin-right: -15px;
+    table-layout: auto;
+}
+.file-table td {
+    font-size: 13px;
+}
+
+.file-table th:nth-child(1) { width: 5%; }   /* Checkbox */
+.file-table th:nth-child(2) { width: auto; }  /* Name */
+.file-table th:nth-child(3) { width: 5%; }  /* Type */
+.file-table th:nth-child(4) { width: 5%; }  /* Size */
+.file-table th:nth-child(5) { width: 10%; }  /* Modified */
