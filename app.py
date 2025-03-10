@@ -25,32 +25,35 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def parse_ftp_list(line):
-    parts = line.split(maxsplit=8)
-    if len(parts) < 9:
-        return None
-    
-    perm = parts[0]
-    name = parts[8].rstrip()
-    is_dir = perm.startswith('d')
-    size = int(parts[4])
-    date_str = ' '.join(parts[5:8])
-    
     try:
-        mtime = datetime.strptime(date_str, '%b %d %H:%M')
-        mtime = mtime.replace(year=datetime.now().year)
-    except ValueError:
+        parts = line.split()
+        if len(parts) < 9:
+            return None
+        
+        # Проверяем является ли элемент директорией
+        is_dir = parts[0].startswith('d')
+        size = parts[4] if not is_dir else ''
+        name = ' '.join(parts[8:])
+        date_str = ' '.join(parts[5:8])
+        
+        # Парсим дату
         try:
-            mtime = datetime.strptime(date_str, '%b %d %Y')
+            mtime = datetime.strptime(f"{date_str} {datetime.now().year}", 
+                                    '%b %d %H:%M %Y')
         except:
-            mtime = datetime.now()
-    
-    return {
-        'name': name,
-        'is_dir': is_dir,
-        'size': size,
-        'mtime': mtime.strftime('%Y-%m-%d %H:%M'),
-        'type': 'Folder' if is_dir else 'File'
-    }
+            mtime = datetime.strptime(date_str, '%b %d %Y')
+            
+        return {
+            'name': name,
+            'is_dir': is_dir,
+            'type': 'Directory' if is_dir else 'File',
+            'size': size,
+            'mtime': mtime.strftime('%Y-%m-%d %H:%M')
+        }
+        
+    except Exception as e:
+        logger.warning(f"Parse error for line: {line} - {str(e)}")
+        return None
 
 def human_size(size):
     for unit in ['B', 'KB', 'MB', 'GB']:
@@ -90,31 +93,43 @@ def list_files(path):
             session.get('ftp_pass')
         )
         
-        files = []
         try:
-            ftp.cwd(path)
+            # Переходим в запрошенную директорию
+            if path:
+                ftp.cwd(path.strip('/'))
+            current_dir = ftp.pwd()
+            
+            items = []
             lines = []
             ftp.retrlines('LIST', lambda x: lines.append(x))
+            
+            # Добавляем родительскую директорию
+            if ftp.pwd() != '/':
+                items.append({
+                    'name': '..',
+                    'is_dir': True,
+                    'type': 'Parent Directory',
+                    'size': '',
+                    'mtime': ''
+                })
             
             for line in lines:
                 item = parse_ftp_list(line)
                 if item:
-                    item['size_h'] = human_size(item['size']) if not item['is_dir'] else ''
-                    files.append(item)
+                    items.append(item)
+            
+            ftp.quit()
+            return render_template('files.html', 
+                                items=items,
+                                current_dir=current_dir)
+            
         except error_perm as e:
             logger.error(f"Directory error: {str(e)}")
-        
-        current_dir = ftp.pwd()
-        ftp.quit()
-        
-        return render_template('files.html', 
-                            files=files,
-                            current_dir=current_dir,
-                            parent_dir=os.path.dirname(current_dir))
-    
+            return f"Ошибка доступа: {str(e)}", 403
+            
     except Exception as e:
         logger.error(f"Error: {traceback.format_exc()}")
-        return f"Error: {str(e)}", 500
+        return f"Ошибка: {str(e)}", 500
 
 @app.route('/download', methods=['POST'])
 def download_files():

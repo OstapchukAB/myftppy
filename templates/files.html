@@ -22,41 +22,44 @@
         {% endif %}
 
         <form action="/download" method="POST">
+            <button type="submit">Download Selected</button>
             <table class="file-table">
                 <thead>
                     <tr>
                         <th></th>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Size</th>
-                        <th>Modified</th>
+                        <th>Имя</th>
+                        <th>Тип</th>
+                        <th>Размер</th>
+                        <th>Изменено</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for file in files %}
+                    {% for item in items %}
                     <tr>
                         <td>
-                            {% if not file.is_dir %}
-                            <input type="checkbox" name="files" value="{{ file.name }}">
+                            {% if not item.is_dir %}
+                            <input type="checkbox" name="files" value="{{ item.name }}">
                             {% endif %}
                         </td>
+                        
                         <td>
-                            {% if file.is_dir %}
-                            <a href="/files/{{ current_dir }}/{{ file.name }}" class="dir-link">
-                                📁 {{ file.name }}
-                            </a>
+                            {% if item.is_dir %}
+                                <a href="/files/{{ current_dir }}/{{ item.name }}" 
+                                   class="dir-link">
+                                    📁 {{ item.name }}
+                                </a>
                             {% else %}
-                            📄 {{ file.name }}
+                                📄 {{ item.name }}
                             {% endif %}
                         </td>
-                        <td>{{ file.type }}</td>
-                        <td>{{ file.size_h }}</td>
-                        <td>{{ file.mtime }}</td>
+                        <td>{{ item.type }}</td>
+                        <td>{{ item.size }}</td>
+                        <td>{{ item.mtime }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-            <button type="submit">Download Selected</button>
+            
         </form>
     </div>
 </body>
